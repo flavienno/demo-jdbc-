@@ -24,12 +24,14 @@ public class TestSelect {
 			System.out.println("Driver non trouvé");
 		}
 		Connection maConnexion = null;
+		Statement monStatement = null;
+		ResultSet curseur = null;
 		try {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
 			System.out.println("Connexion établie");
 
-			Statement monStatement = maConnexion.createStatement();
-			ResultSet curseur = monStatement.executeQuery("SELECT * FROM FOURNISSEUR");
+			monStatement = maConnexion.createStatement();
+			curseur = monStatement.executeQuery("SELECT * FROM FOURNISSEUR");
 
 			ArrayList<Fournisseur> fournisseurs = new ArrayList<>();
 			while (curseur.next()) {
@@ -38,20 +40,32 @@ public class TestSelect {
 
 				Fournisseur fournisseurCourant = new Fournisseur(id, nom);
 				fournisseurs.add(fournisseurCourant);
-
 				for (Fournisseur fournisseur : fournisseurs) {
 					System.out.println(fournisseur);
 				}
+
 			}
 
-			maConnexion.close();
 		} catch (SQLException e) {
 
 			System.out.println("Impossible d'établir une connexion");
 		} finally {
 			try {
+				monStatement.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				curseur.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
 				if (maConnexion != null) {
 					maConnexion.close();
+					System.out.println("Connexion terminée");
 				}
 			} catch (SQLException e) {
 				System.err.println("Impossible de fermer la connexion à la base de données");
