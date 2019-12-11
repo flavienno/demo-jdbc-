@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
 
+import fr.diginamic.jdbc.dao.FournisseurDaoJdbc;
+import fr.diginamic.jdbc.entites.Fournisseur;
+
 /**
  * @author fla
  *
@@ -19,39 +22,9 @@ public class TestInsertion {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-
-			System.out.println("Driver non trouvé");
-		}
-		Connection maConnexion = null;
-		try {
-			maConnexion = DriverManager.getConnection(url, userName, passWord);
-			System.out.println("Connexion établie");
-
-			Statement monStatement = maConnexion.createStatement();
-			int nb = monStatement
-					.executeUpdate("INSERT INTO FOURNISSEUR (ID,NOM) VALUES (4,'La Maison de la Peinture')");
-
-		} catch (SQLException e) {
-
-			System.out.println("Impossible d'établir une connexion");
-		} finally {
-			try {
-				if (maConnexion != null) {
-					maConnexion.close();
-				}
-			} catch (SQLException e) {
-				System.err.println("Impossible de fermer la connexion à la base de données");
-			}
-
-		}
+		FournisseurDaoJdbc fournisseurUpdate = new FournisseurDaoJdbc();
+		Fournisseur fournisseur = new Fournisseur(4, "La Maison de la Peinture");
+		fournisseurUpdate.insert(fournisseur);
 
 	}
 }
