@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package fr.diginamic.jdbc.dao;
 
 import java.sql.Connection;
@@ -9,12 +12,194 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import fr.diginamic.jdbc.entites.Fournisseur;
+import fr.diginamic.jdbc.entites.Article;
 
-public class FournisseurDaoJdbc implements FournisseurDao {
+/**
+ * @author fla
+ *
+ */
+public class ArticleDaoJdbc implements ArticleDao {
 
+	public Double moyenne() {
+		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
+		String userName = monFichierConf.getString("database.user");
+		String passWord = monFichierConf.getString("database.password");
+		String driver = monFichierConf.getString("database.driver");
+		String url = monFichierConf.getString("database.url");
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+
+			System.out.println("Driver non trouvé");
+		}
+		Connection maConnexion = null;
+		Double moyenne = 0.0;
+		try {
+			maConnexion = DriverManager.getConnection(url, userName, passWord);
+			System.out.println("Connexion établie");
+
+			Statement monStatement = maConnexion.createStatement();
+			String requete = "SELECT AVG(PRIX) AS MOY FROM ARTICLE";
+
+			ResultSet result = monStatement.executeQuery(requete);
+
+			if (result.next()) {
+				moyenne = result.getDouble("MOY");
+			}
+			;
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			System.out.println("Insertion impossible");
+		} finally {
+			try {
+				if (maConnexion != null) {
+					maConnexion.close();
+				}
+			} catch (SQLException e) {
+				System.err.println("Impossible de fermer la connexion à la base de données");
+			}
+
+		}
+		return moyenne;
+	}
+
+	/*
+	 * 
+	 * 
+	 * @see fr.diginamic.jdbc.dao.ArticleDao#extraire()
+	 */
 	@Override
-	public int update(String ancienNom, String nouveauNom) {
+	public List<Article> extraire() {
+
+		// récupération ds monFichierConf des infos de database.properties
+		// nécessaires à la connection
+		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
+		String userName = monFichierConf.getString("database.user");
+		String passWord = monFichierConf.getString("database.password");
+		String driver = monFichierConf.getString("database.driver");
+		String url = monFichierConf.getString("database.url");
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+
+			System.out.println("Driver non trouvé");
+		}
+		Connection maConnexion = null;
+		Statement monStatement = null;
+		ResultSet curseur = null;
+
+		// création de la liste d'articles
+		ArrayList<Article> articles = new ArrayList<>();
+
+		// tentative de connection
+		try {
+			maConnexion = DriverManager.getConnection(url, userName, passWord);
+			System.out.println("Connexion établie");
+
+			monStatement = maConnexion.createStatement();
+			curseur = monStatement.executeQuery("SELECT * FROM ARTICLE");
+
+			// remplissage de la liste
+			while (curseur.next()) {
+				Integer id = curseur.getInt("ID");
+				String ref = curseur.getString("REF");
+				String designation = curseur.getString("DESIGNATION");
+				Float prix = curseur.getFloat("PRIX");
+
+				Article articleCourant = new Article(id, ref, designation, prix);
+				articles.add(articleCourant);
+
+			}
+
+		} catch (SQLException e) {
+
+			System.out.println("Impossible d'établir une liste");
+		} finally {
+			try {
+				monStatement.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				curseur.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				if (maConnexion != null) {
+					maConnexion.close();
+					System.out.println("Connexion terminée");
+				}
+			} catch (SQLException e) {
+				System.err.println("Impossible de fermer la connexion à la base de données");
+			}
+
+		}
+
+		return articles;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.diginamic.jdbc.dao.ArticleDao#insert(fr.diginamic.jdbc.entites.
+	 * Article)
+	 */
+	@Override
+	public void insert(Article article) {
+		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
+		String userName = monFichierConf.getString("database.user");
+		String passWord = monFichierConf.getString("database.password");
+		String driver = monFichierConf.getString("database.driver");
+		String url = monFichierConf.getString("database.url");
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+
+			System.out.println("Driver non trouvé");
+		}
+		Connection maConnexion = null;
+		try {
+			maConnexion = DriverManager.getConnection(url, userName, passWord);
+			System.out.println("Connexion établie");
+
+			Statement monStatement = maConnexion.createStatement();
+			String requete = "INSERT INTO ARTICLE (ID,REF,DESIGNATION,PRIX,ID_FOU) VALUES (" + article.getId() + ",'"
+					+ article.getRef() + "','" + article.getDesignation() + "'," + article.getPrix() + ","
+					+ article.getFournisseur().getId() + ")";
+
+			int nb = monStatement.executeUpdate(requete);
+			maConnexion.commit();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			System.out.println("Insertion impossible");
+		} finally {
+			try {
+				if (maConnexion != null) {
+					maConnexion.close();
+				}
+			} catch (SQLException e) {
+				System.err.println("Impossible de fermer la connexion à la base de données");
+			}
+
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.diginamic.jdbc.dao.ArticleDao#update(java.lang.String,
+	 * java.lang.String, java.lang.String, java.lang.String,
+	 * fr.diginamic.jdbc.entites.Fournisseur,
+	 * fr.diginamic.jdbc.entites.Fournisseur)
+	 */
+	@Override
+	public int update(String ancienRef, String nvRef, String ancienDesignation, String nvDesignation, Float ancienPrix,
+			Float nvPrix) {
 		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
 		String userName = monFichierConf.getString("database.user");
 		String passWord = monFichierConf.getString("database.password");
@@ -33,12 +218,13 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			System.out.println("Connexion établie");
 
 			Statement monStatement = maConnexion.createStatement();
-			nb = monStatement
-					.executeUpdate("UPDATE FOURNISSEUR SET NOM='" + nouveauNom + "' WHERE NOM='" + ancienNom + "'");
+			nb = monStatement.executeUpdate("UPDATE ARTICLE SET REF='" + nvRef + "' WHERE REF='" + ancienRef
+					+ "', DESIGNATION='" + nvDesignation + "' WHERE DESIGNATION='" + ancienDesignation + "', PRIX='"
+					+ nvPrix + "' WHERE PRIX='" + ancienPrix + "'");
 
 		} catch (SQLException e) {
 
-			System.out.println("Impossible d'établir une connexion");
+			System.out.println("Mise à jour impossible");
 		} finally {
 			try {
 				if (maConnexion != null) {
@@ -52,8 +238,7 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 		return nb;
 	}
 
-	@Override
-	public List<Fournisseur> extraire() {
+	public int updatePrix(Float ancienPrix, Float nvPrix) {
 		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
 		String userName = monFichierConf.getString("database.user");
 		String passWord = monFichierConf.getString("database.password");
@@ -66,125 +251,39 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			System.out.println("Driver non trouvé");
 		}
 		Connection maConnexion = null;
-		Statement monStatement = null;
-		ResultSet curseur = null;
-		ArrayList<Fournisseur> fournisseurs = new ArrayList<>();
+		int nb = 0;
 		try {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
 			System.out.println("Connexion établie");
 
-			monStatement = maConnexion.createStatement();
-			curseur = monStatement.executeQuery("SELECT * FROM FOURNISSEUR");
-
-			while (curseur.next()) {
-				Integer id = curseur.getInt("ID");
-				String nom = curseur.getString("NOM");
-
-				Fournisseur fournisseurCourant = new Fournisseur(id, nom);
-				fournisseurs.add(fournisseurCourant);
-
-			}
-			for (Fournisseur fournisseur : fournisseurs) {
-				System.out.println(fournisseur);
-			}
+			Statement monStatement = maConnexion.createStatement();
+			nb = monStatement.executeUpdate("UPDATE ARTICLE SET PRIX='" + nvPrix + "' WHERE PRIX='" + ancienPrix
+					+ "' WHERE DESIGNATION LIKE '%mate%'");
 
 		} catch (SQLException e) {
 
-			System.out.println("Impossible d'établir une connexion");
+			System.out.println("Mise à jour impossible");
 		} finally {
-			try {
-				monStatement.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				curseur.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			try {
 				if (maConnexion != null) {
 					maConnexion.close();
-					System.out.println("Connexion terminée");
 				}
 			} catch (SQLException e) {
 				System.err.println("Impossible de fermer la connexion à la base de données");
 			}
 
 		}
-
-		return fournisseurs;
+		return nb;
 	}
 
 	/*
-	 * / fonction qui permet de remonter l'objet fournisseur et donc de
-	 * retrouver son ID à partir de son nom
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.diginamic.jdbc.dao.ArticleDao#delete(fr.diginamic.jdbc.entites.
+	 * Article)
 	 */
-	public Fournisseur extraireFournisseur(String nomFournisseur) {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-
-			System.out.println("Driver non trouvé");
-		}
-		Connection maConnexion = null;
-		Statement monStatement = null;
-		ResultSet curseur = null;
-		Fournisseur fournisseur = null;
-		try {
-			maConnexion = DriverManager.getConnection(url, userName, passWord);
-			System.out.println("Connexion établie");
-
-			monStatement = maConnexion.createStatement();
-			curseur = monStatement.executeQuery("SELECT * FROM FOURNISSEUR WHERE NOM='" + nomFournisseur + "'");
-
-			if (curseur.next()) {
-				Integer id = curseur.getInt("ID");
-				String nom = curseur.getString("NOM");
-
-				fournisseur = new Fournisseur(id, nom);
-
-			}
-
-		} catch (SQLException e) {
-
-			System.out.println("Impossible d'établir une connexion");
-		} finally {
-			try {
-				monStatement.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				curseur.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				if (maConnexion != null) {
-					maConnexion.close();
-					System.out.println("Connexion terminée");
-				}
-			} catch (SQLException e) {
-				System.err.println("Impossible de fermer la connexion à la base de données");
-			}
-
-		}
-
-		return fournisseur;
-	}
-
 	@Override
-	public void insert(Fournisseur fournisseur) {
+	public boolean delete(Article article) {
 		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
 		String userName = monFichierConf.getString("database.user");
 		String passWord = monFichierConf.getString("database.password");
@@ -202,46 +301,7 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			System.out.println("Connexion établie");
 
 			Statement monStatement = maConnexion.createStatement();
-			String requete = "INSERT INTO FOURNISSEUR (ID,NOM) VALUES (" + fournisseur.getId() + ",'"
-					+ fournisseur.getNom() + "')";
-			int nb = monStatement.executeUpdate(requete);
-			maConnexion.commit();
-		} catch (SQLException e) {
-
-			System.out.println("Impossible d'établir une connexion");
-		} finally {
-			try {
-				if (maConnexion != null) {
-					maConnexion.close();
-				}
-			} catch (SQLException e) {
-				System.err.println("Impossible de fermer la connexion à la base de données");
-			}
-
-		}
-
-	}
-
-	@Override
-	public boolean delete(Fournisseur fournisseur) {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-
-			System.out.println("Driver non trouvé");
-		}
-		Connection maConnexion = null;
-		try {
-			maConnexion = DriverManager.getConnection(url, userName, passWord);
-			System.out.println("Connexion établie");
-
-			Statement monStatement = maConnexion.createStatement();
-			int nb = monStatement.executeUpdate("DELETE FROM FOURNISSEUR WHERE NOM='La Maison des Peintures'");
+			int nb = monStatement.executeUpdate("DELETE FROM ARTICLE WHERE REF='" + article.getRef() + "'");
 
 			maConnexion.commit();
 			return true;
@@ -261,7 +321,7 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 		}
 	}
 
-	public boolean deleteMP() {
+	public boolean deleteArticlePeinture() {
 		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
 		String userName = monFichierConf.getString("database.user");
 		String passWord = monFichierConf.getString("database.password");
@@ -279,7 +339,7 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			System.out.println("Connexion établie");
 
 			Statement monStatement = maConnexion.createStatement();
-			int nb = monStatement.executeUpdate("DELETE FROM FOURNISSEUR WHERE NOM='La Maison de la Peinture'");
+			int nb = monStatement.executeUpdate("DELETE FROM ARTICLE WHERE DESIGNATION LIKE '%Peinture%'");
 
 			maConnexion.commit();
 			return true;

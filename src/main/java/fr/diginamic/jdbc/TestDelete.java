@@ -23,9 +23,9 @@ public class TestDelete {
 	 */
 	public static void main(String[] args) {
 
-		FournisseurDaoJdbc fournisseurUpdate = new FournisseurDaoJdbc();
+		FournisseurDaoJdbc fournisseurDelete = new FournisseurDaoJdbc();
 		Fournisseur fournisseur = new Fournisseur(4, "La Maison des Peintures");
-		fournisseurUpdate.delete(fournisseur);
+		fournisseurDelete.delete(fournisseur);
 
 	}
 }
