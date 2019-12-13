@@ -20,18 +20,26 @@ import fr.diginamic.jdbc.entites.Article;
  */
 public class ArticleDaoJdbc implements ArticleDao {
 
-	public Double moyenne() {
+	private String userName;
+	private String url;
+	private String passWord;
+
+	public ArticleDaoJdbc() {
 		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
+		userName = monFichierConf.getString("database.user");
+		passWord = monFichierConf.getString("database.password");
 		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
+		url = monFichierConf.getString("database.url");
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e) {
 
 			System.out.println("Driver non trouvé");
 		}
+	}
+
+	public Double moyenne() {
+
 		Connection maConnexion = null;
 		Double moyenne = 0.0;
 		try {
@@ -74,17 +82,7 @@ public class ArticleDaoJdbc implements ArticleDao {
 
 		// récupération ds monFichierConf des infos de database.properties
 		// nécessaires à la connection
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
 
-			System.out.println("Driver non trouvé");
-		}
 		Connection maConnexion = null;
 		Statement monStatement = null;
 		ResultSet curseur = null;
@@ -150,17 +148,7 @@ public class ArticleDaoJdbc implements ArticleDao {
 	 */
 	@Override
 	public void insert(Article article) {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
 
-			System.out.println("Driver non trouvé");
-		}
 		Connection maConnexion = null;
 		try {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
@@ -200,17 +188,7 @@ public class ArticleDaoJdbc implements ArticleDao {
 	@Override
 	public int update(String ancienRef, String nvRef, String ancienDesignation, String nvDesignation, Float ancienPrix,
 			Float nvPrix) {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
 
-			System.out.println("Driver non trouvé");
-		}
 		Connection maConnexion = null;
 		int nb = 0;
 		try {
@@ -257,11 +235,11 @@ public class ArticleDaoJdbc implements ArticleDao {
 			System.out.println("Connexion établie");
 
 			Statement monStatement = maConnexion.createStatement();
-			nb = monStatement.executeUpdate("UPDATE ARTICLE SET PRIX='" + nvPrix + "' WHERE PRIX='" + ancienPrix
-					+ "' WHERE DESIGNATION LIKE '%mate%'");
-
+			nb = monStatement.executeUpdate("UPDATE ARTICLE SET PRIX=" + nvPrix + " WHERE PRIX=" + ancienPrix
+					+ " AND DESIGNATION LIKE '%mate%'");
+			maConnexion.commit();
 		} catch (SQLException e) {
-
+			System.out.println(e.getMessage());
 			System.out.println("Mise à jour impossible");
 		} finally {
 			try {
@@ -284,17 +262,7 @@ public class ArticleDaoJdbc implements ArticleDao {
 	 */
 	@Override
 	public boolean delete(Article article) {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
 
-			System.out.println("Driver non trouvé");
-		}
 		Connection maConnexion = null;
 		try {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
@@ -322,17 +290,7 @@ public class ArticleDaoJdbc implements ArticleDao {
 	}
 
 	public boolean deleteArticlePeinture() {
-		ResourceBundle monFichierConf = ResourceBundle.getBundle("database");
-		String userName = monFichierConf.getString("database.user");
-		String passWord = monFichierConf.getString("database.password");
-		String driver = monFichierConf.getString("database.driver");
-		String url = monFichierConf.getString("database.url");
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
 
-			System.out.println("Driver non trouvé");
-		}
 		Connection maConnexion = null;
 		try {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);

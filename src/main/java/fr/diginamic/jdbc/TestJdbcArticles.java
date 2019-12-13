@@ -1,6 +1,5 @@
 package fr.diginamic.jdbc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import fr.diginamic.jdbc.dao.ArticleDaoJdbc;
@@ -22,14 +21,13 @@ public class TestJdbcArticles {
 
 		// insertion des nouveaux articles
 		ArticleDaoJdbc articleDao = new ArticleDaoJdbc();
-
 		articleDao.insert(new Article(11, "B01", "Peinture blanche 1L", (float) 12.5, fournisseur));
 		articleDao.insert(new Article(12, "B02", "Peinture rouge mate 1L", (float) 15.5, fournisseur));
 		articleDao.insert(new Article(13, "B03", "Peinture noire laquée 1L ", (float) 17.8, fournisseur));
 		articleDao.insert(new Article(14, "B04", "Peinture bleue mate 1L", (float) 15.5, fournisseur));
 
 		// modification du prix de certains articles
-		// Article article = null;
+
 		// articleDao.updatePrix(article.getPrix(), (float) (article.getPrix() *
 		// 0.25));
 		// articleDao.updatePrix(article3.getPrix(), (float) (article3.getPrix()
@@ -37,11 +35,13 @@ public class TestJdbcArticles {
 		List<Article> articles = articleDao.extraire();
 		for (Article articleObj : articles) {
 			articleDao.updatePrix(articleObj.getPrix(), (float) (articleObj.getPrix() * 0.25));
-
+			
 		}
-
+		
+		
+		// rafraichissement de la liste
+		articles = articleDao.extraire();
 		// affichage de la liste des articles
-		// List<Article> articles = articleDao.extraire();
 		for (Article articleObj : articles) {
 			System.out.println(articleObj);
 		}

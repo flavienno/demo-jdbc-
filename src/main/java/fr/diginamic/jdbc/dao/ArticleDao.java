@@ -41,12 +41,13 @@ public interface ArticleDao {
 	 * fonction permettant de modifier un article existant en base
 	 * 
 	 * @param ancienRef
+	 *            ancienne reference
 	 * @param nvRef
 	 * @param ancienDesignation
 	 * @param nvDesignation
 	 * @param ancienPrix
 	 * @param nvPrix
-	 * @return
+	 * @return int
 	 */
 	int update(String ancienRef, String nvRef, String ancienDesignation, String nvDesignation, Float ancienPrix,
 			Float nvPrix);
