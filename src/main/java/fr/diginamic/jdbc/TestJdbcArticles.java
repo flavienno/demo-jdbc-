@@ -28,17 +28,12 @@ public class TestJdbcArticles {
 
 		// modification du prix de certains articles
 
-		// articleDao.updatePrix(article.getPrix(), (float) (article.getPrix() *
-		// 0.25));
-		// articleDao.updatePrix(article3.getPrix(), (float) (article3.getPrix()
-		// * 0.25));
 		List<Article> articles = articleDao.extraire();
 		for (Article articleObj : articles) {
 			articleDao.updatePrix(articleObj.getPrix(), (float) (articleObj.getPrix() * 0.25));
-			
+
 		}
-		
-		
+
 		// rafraichissement de la liste
 		articles = articleDao.extraire();
 		// affichage de la liste des articles

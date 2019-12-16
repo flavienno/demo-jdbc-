@@ -2,6 +2,7 @@ package fr.diginamic.jdbc.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,9 +33,15 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
 			System.out.println("Connexion établie");
 
-			Statement monStatement = maConnexion.createStatement();
-			nb = monStatement
-					.executeUpdate("UPDATE FOURNISSEUR SET NOM='" + nouveauNom + "' WHERE NOM='" + ancienNom + "'");
+			// Statement monStatement = maConnexion.createStatement();
+			// nb = monStatement
+			// .executeUpdate("UPDATE FOURNISSEUR SET NOM='" + nouveauNom + "'
+			// WHERE NOM='" + ancienNom + "'");
+			PreparedStatement updateFournisseur = maConnexion
+					.prepareStatement("UPDATE FOURNISSEUR SET NOM=? WHERE NOM=?");
+			updateFournisseur.setString(1, nouveauNom);
+			updateFournisseur.setString(2, ancienNom);
+			updateFournisseur.executeUpdate();
 
 		} catch (SQLException e) {
 
@@ -142,8 +149,13 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
 			System.out.println("Connexion établie");
 
-			monStatement = maConnexion.createStatement();
-			curseur = monStatement.executeQuery("SELECT * FROM FOURNISSEUR WHERE NOM='" + nomFournisseur + "'");
+			// monStatement = maConnexion.createStatement();
+			// curseur = monStatement.executeQuery("SELECT * FROM FOURNISSEUR
+			// WHERE NOM='" + nomFournisseur + "'");
+
+			PreparedStatement extraireFournisseur = maConnexion
+					.prepareStatement("SELECT * FROM FOURNISSEUR WHERE NOM=?");
+			extraireFournisseur.setString(1, nomFournisseur);
 
 			if (curseur.next()) {
 				Integer id = curseur.getInt("ID");
@@ -240,8 +252,13 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
 			System.out.println("Connexion établie");
 
-			Statement monStatement = maConnexion.createStatement();
-			int nb = monStatement.executeUpdate("DELETE FROM FOURNISSEUR WHERE NOM='La Maison des Peintures'");
+			// Statement monStatement = maConnexion.createStatement();
+			// int nb = monStatement.executeUpdate("DELETE FROM FOURNISSEUR
+			// WHERE NOM='La Maison des Peintures'");
+
+			PreparedStatement deleteFournisseur = maConnexion.prepareStatement("DELETE FROM FOURNISSEUR WHERE NOM=?");
+			deleteFournisseur.setString(1, "La Maison des Peintures");
+			deleteFournisseur.executeUpdate();
 
 			maConnexion.commit();
 			return true;
@@ -278,8 +295,13 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 			maConnexion = DriverManager.getConnection(url, userName, passWord);
 			System.out.println("Connexion établie");
 
-			Statement monStatement = maConnexion.createStatement();
-			int nb = monStatement.executeUpdate("DELETE FROM FOURNISSEUR WHERE NOM='La Maison de la Peinture'");
+			// Statement monStatement = maConnexion.createStatement();
+			// int nb = monStatement.executeUpdate("DELETE FROM FOURNISSEUR
+			// WHERE NOM='La Maison de la Peinture'");
+
+			PreparedStatement deleteMP = maConnexion.prepareStatement("DELETE FROM FOURNISSEUR WHERE NOM=?");
+			deleteMP.setString(1, "La Maison de la Peinture");
+			deleteMP.executeUpdate();
 
 			maConnexion.commit();
 			return true;
